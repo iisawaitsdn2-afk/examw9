@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="id"><head><base target="_top"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#16803c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="EXAMW9">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<script src="gas-bridge.js"></script>
+<title>EXAMW9 - Ponpes Walisongo</title>
+<style>
+:root{--g:#16803c;--gd:#0f5f2c;--gl:#e9f6ee;--gold:#d4a017;--bd:#e3e9e5;--tx:#1b2a21;--mu:#66746b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:#fff;color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.5}
+button{cursor:pointer;font:inherit}button:disabled{opacity:.5;cursor:not-allowed}
+input,select,textarea{font:inherit;width:100%;padding:11px 13px;border:1.5px solid var(--bd);border-radius:10px;background:#fff;margin:5px 0 12px;transition:.15s;color:var(--tx)}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--g);box-shadow:0 0 0 3px #16803c22}
+input[readonly]{background:#f6f8f7}
+label{font-size:13px;font-weight:600;color:#33473a}
+.btn{background:linear-gradient(135deg,var(--g),var(--gd));color:#fff;border:0;border-radius:10px;padding:11px 20px;font-weight:600;box-shadow:0 3px 10px #16803c44;transition:.15s}
+.btn:hover:not(:disabled){transform:translateY(-1px)}
+.btn.o{background:#fff;color:var(--g);border:1.5px solid var(--g);box-shadow:none}
+.btn.r{background:#c0392b;box-shadow:none}.btn.s{padding:5px 11px;font-size:13px}
+.card{background:#fff;border:1px solid var(--bd);border-radius:16px;padding:24px;box-shadow:0 6px 24px rgba(20,60,35,.07);animation:up .35s ease}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.wrap{max-width:900px;margin:0 auto;padding:20px 14px 40px}
+.center{text-align:center}.err{color:#c0392b;font-size:13px;min-height:20px}
+/* banner jaringan */
+#nb{position:fixed;top:0;left:50%;transform:translate(-50%,-120%);z-index:99;padding:8px 18px;border-radius:0 0 12px 12px;font-size:13px;font-weight:600;color:#fff;transition:.3s;max-width:95%;text-align:center}
+#nb.show{transform:translate(-50%,0)}#nb.off{background:#c0392b}#nb.slow{background:#e67e22}#nb.ok{background:var(--g)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 18px;border-radius:30px;z-index:99;font-size:14px;animation:up .3s}
+/* login */
+.lg{min-height:100vh;background:linear-gradient(#16803c 50%,#fff 50%);position:relative;display:flex;align-items:center;justify-content:center;padding:16px;overflow:hidden}
+.lg:before{content:"";position:absolute;inset:0 0 50% 0;background:radial-gradient(circle at 15% 30%,#ffffff18 0 90px,transparent 91px),radial-gradient(circle at 85% 70%,#ffffff14 0 140px,transparent 141px),radial-gradient(circle at 60% 10%,#ffffff10 0 60px,transparent 61px)}
+.lg .card{width:100%;max-width:410px;text-align:center;position:relative;padding:30px 26px}
+.lg .logo{width:96px;height:96px;object-fit:contain;margin-top:-72px;background:#fff;border-radius:50%;padding:6px;box-shadow:0 6px 20px #0003}
+.lg h1{margin:10px 0 2px;color:var(--g);font-size:27px}.lg p{margin:0 0 18px;color:var(--mu);font-size:14px}
+.lg label{display:block;text-align:left}.pw{position:relative}.pw span{position:absolute;right:12px;top:15px;cursor:pointer;font-size:16px;user-select:none}
+/* bar atas */
+.top{background:linear-gradient(135deg,var(--g),var(--gd));color:#fff;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;position:sticky;top:0;z-index:5;box-shadow:0 2px 10px #0003}
+.top .br{display:flex;align-items:center;gap:10px;font-weight:700;min-width:0}.top img{width:34px;height:34px;object-fit:contain;background:#fff;border-radius:50%;padding:2px}
+.top .br span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.timer{background:#fff;color:var(--g);border-radius:20px;padding:5px 15px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.timer.low{background:#c0392b;color:#fff;animation:bl 1s infinite}@keyframes bl{50%{opacity:.6}}
+.pg{height:5px;background:#dcebe1}.pg i{display:block;height:100%;background:var(--gold);transition:.3s}
+/* ujian */
+.paper{position:relative;overflow:hidden;min-height:400px}
+.wm{position:absolute;inset:0;background-position:center;background-repeat:no-repeat;background-size:50%;opacity:.08;pointer-events:none}
+.paper>*:not(.wm){position:relative}
+.chip{display:inline-block;background:var(--gl);color:var(--g);border-radius:20px;padding:3px 12px;font-size:12.5px;font-weight:700}
+.bac{background:#f4faf6;border-left:4px solid var(--g);padding:13px 15px;border-radius:8px;margin:12px 0;white-space:pre-wrap}
+.img{max-width:100%;max-height:320px;display:block;margin:10px 0;border-radius:8px;background:#f1f1f1}
+.op{display:flex;gap:12px;align-items:center;border:1.5px solid var(--bd);border-radius:12px;padding:12px 14px;margin:10px 0;cursor:pointer;background:#ffffffcc;transition:.15s}
+.op:hover{border-color:var(--g)}.op.s{border-color:var(--g);background:var(--gl)}
+.op b{display:grid;place-items:center;min-width:30px;height:30px;border-radius:50%;background:#eef2ef;color:var(--g)}.op.s b{background:var(--g);color:#fff}
+.nav{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0}
+.nav button{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--bd);background:#fff;font-weight:600}
+.nav .d{background:var(--g);color:#fff;border-color:var(--g)}.nav .c{outline:3px solid var(--gold);outline-offset:1px}
+.bot{position:sticky;bottom:0;background:#fffe;backdrop-filter:blur(6px);padding:12px 0;display:flex;justify-content:space-between;gap:8px;border-top:1px solid var(--bd)}
+.rule li{margin:8px 0}
+/* admin */
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:4px 0 8px;margin:6px 0 10px}
+.tabs button{border:1.5px solid var(--bd);background:#fff;color:var(--tx);border-radius:30px;padding:8px 16px;font-weight:600;white-space:nowrap}
+.tabs button.a{background:var(--g);color:#fff;border-color:var(--g)}
+.st{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px}
+.st div{background:var(--gl);border-radius:14px;padding:14px;text-align:center}.st b{display:block;font-size:26px;color:var(--g)}.st small{color:var(--mu)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{background:var(--g);color:#fff;text-align:left;position:sticky;top:0}th:first-child{border-radius:8px 0 0 0}th:last-child{border-radius:0 8px 0 0}
+th,td{padding:10px 8px;border-bottom:1px solid var(--bd);vertical-align:top}tr:hover td{background:#f8fbf9}
+.sc{overflow-x:auto;max-height:60vh}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}@media(max-width:600px){.grid{grid-template-columns:1fr}.card{padding:18px}}
+.nl{display:inline-block;min-width:38px;text-align:center;border-radius:20px;padding:2px 10px;font-weight:800;background:var(--gl);color:var(--g)}.nl.k{background:#fdeaea;color:#c0392b}
+/* sertifikat */
+.cert{position:relative;border:10px double var(--g);outline:2px solid var(--gold);outline-offset:-18px;padding:34px 30px;text-align:center;background:#fff;margin-top:14px}
+.cert .kop{display:flex;align-items:center;gap:14px;border-bottom:4px double var(--g);padding-bottom:12px;text-align:left;position:relative}
+.cert .kop img{width:84px;height:84px;object-fit:contain}.cert h2{margin:0;font-size:20px;color:var(--g)}.cert small{color:var(--mu)}
+.cert h1{letter-spacing:6px;margin:24px 0 6px;color:var(--gd)}
+.cert .nm{font-size:30px;font-weight:700;border-bottom:2px solid var(--gold);display:inline-block;padding:0 28px;margin:8px 0;font-family:Georgia,serif}
+.cert table{max-width:430px;margin:14px auto}.cert th,.cert td{text-align:center}
+/* loading */
+#ld{position:fixed;inset:0;z-index:150;background:#fff;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+#ld.on{opacity:1;pointer-events:all}.lw{text-align:center;padding:20px}
+.rg{width:134px;height:134px;margin:0 auto 24px;border-radius:50%;position:relative;display:grid;place-items:center;background:conic-gradient(var(--g),var(--gold),#fff 70%,var(--g));animation:sp 1.4s linear infinite}
+.rg:before{content:"";position:absolute;inset:6px;background:#fff;border-radius:50%}
+.rg img{width:92px;height:92px;object-fit:contain;position:relative;animation:sp 1.4s linear infinite reverse}
+@keyframes sp{to{transform:rotate(360deg)}}
+.lt{font-weight:700;color:var(--g);font-size:17px}.dt i{font-style:normal;animation:db 1.2s infinite}.dt i:nth-child(2){animation-delay:.2s}.dt i:nth-child(3){animation-delay:.4s}
+@keyframes db{0%,60%,100%{opacity:.2}30%{opacity:1}}
+.lb{width:210px;height:5px;background:var(--gl);border-radius:5px;margin:16px auto 10px;overflow:hidden}
+.lb i{display:block;height:100%;width:40%;background:linear-gradient(90deg,var(--g),var(--gold));border-radius:5px;animation:ib 1.2s ease-in-out infinite}
+@keyframes ib{0%{margin-left:-40%}100%{margin-left:100%}}#ld small{color:var(--mu)}
+/* anticheat */
+body.ex{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+#vw{position:fixed;inset:0;z-index:120;background:#000b;display:none;align-items:center;justify-content:center;padding:16px}
+.vb{background:#fff;border-radius:18px;padding:28px;max-width:420px;text-align:center;animation:up .25s}.vb h2{color:#c0392b;margin:6px 0}
+.vc{background:#ffffff30;border-radius:20px;padding:4px 11px;font-size:13px;font-weight:700}
+/* kartu ujian & cetak */
+.kg{display:grid;grid-template-columns:1fr 1fr;gap:8mm}
+.kt{border:2px solid var(--g);border-radius:10px;padding:10px 12px;break-inside:avoid;position:relative;overflow:hidden;font-size:12px}
+.kt .h{display:flex;gap:8px;align-items:center;border-bottom:2px solid var(--gold);padding-bottom:6px;margin-bottom:6px;position:relative}.kt .h img{width:42px;height:42px;object-fit:contain}
+.kt .h b{color:var(--g);font-size:11.5px;display:block;line-height:1.2}.kt h4{margin:4px 0;text-align:center;letter-spacing:1px;color:var(--gd);font-size:14px;position:relative}
+.kt table{font-size:12px;position:relative}.kt td{padding:3px 4px;border:0}.kt td:first-child{width:70px;color:#555}
+.pwd{font-family:monospace;font-weight:700;background:#f1f1f1;padding:1px 6px;border-radius:4px}.kt small{display:block;margin-top:6px;color:#666;font-size:10px;position:relative}
+.av{border-radius:50%;object-fit:cover;display:inline-grid;place-items:center;flex:none;background:var(--gl);border:3px solid #fff;box-shadow:0 2px 10px #0002;vertical-align:middle}
+.av.ph{background:linear-gradient(135deg,var(--g),var(--gd));color:#fff;font-weight:800}
+.hi{background:linear-gradient(135deg,var(--g),var(--gd));color:#fff;border-radius:18px;padding:20px 24px;margin-bottom:18px;position:relative;overflow:hidden}
+.hi:after{content:"";position:absolute;right:-30px;top:-40px;width:170px;height:170px;border-radius:50%;background:#ffffff18}.hi h2{margin:0 0 4px}.hi p{margin:0;opacity:.92}
+.hero{display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start}@media(max-width:760px){.hero{grid-template-columns:1fr}}
+.prof{text-align:center}.prof h3{margin:12px 0 6px}
+.ro{text-align:left;margin-top:14px}.ro div{background:#f6f9f7;border-radius:10px;padding:9px 12px;margin:8px 0}.ro small{display:block;color:var(--mu);font-size:11.5px}.ro b{font-size:15px}
+.lock{font-size:12.5px;color:#7a5d00;background:#fff8e1;border-radius:10px;padding:8px 10px;margin:12px 0 0;text-align:left}
+.rl{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px dashed var(--bd)}.rl:last-child{border:0}
+.rl i{font-style:normal;display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:var(--gl);flex:none}
+.srch{max-width:340px}.tdp{display:flex;align-items:center;gap:10px}
+.kb{display:flex;gap:10px;align-items:flex-start;position:relative}.kb table{flex:1}
+.kf{width:2.4cm;height:3.2cm;border:1.5px solid var(--g);border-radius:6px;overflow:hidden;display:grid;place-items:center;color:#999;font-size:10px;text-align:center;flex:none;background:#fff}.kf img{width:100%;height:100%;object-fit:cover}
+#fg{position:fixed;inset:0;z-index:130;background:linear-gradient(#fff 55%,#e9f6ee);display:none;align-items:center;justify-content:center;padding:20px;text-align:center}
+#fg.on{display:flex}.gb{max-width:380px;animation:up .3s}.gb img{width:110px;height:110px;object-fit:contain}.gb h2{color:var(--g);margin:10px 0 6px}.gb p{color:var(--mu);margin:0 0 18px}
+.ni{display:inline-flex;align-items:center;gap:6px;background:#ffffff26;color:#fff;border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;user-select:none}
+.ni .tx2{opacity:.85;font-weight:600}.bars{display:inline-flex;align-items:flex-end;gap:2px;height:14px}.bars i{width:3px;border-radius:1px;background:#fff;display:block}
+.bars.mid i{background:#ffd54f}.bars.bad i{background:#ffab91}.bars.off i{background:#ff8a80}
+.lgni{position:absolute;top:14px;right:14px;z-index:3}.nr{display:flex;gap:8px;align-items:center}
+@media(max-width:520px){.ni .tx2{display:none}.ni{padding:4px 8px}}
+#pr{display:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+@media print{body>*:not(#pr){display:none!important}#pr{display:block!important}}
+</style><style id="pgst"></style></head>
+<body><div id="nb"></div><div id="app"><div id="boot" style="padding:40px;text-align:center;font-family:sans-serif;color:#16803c">Memuat EXAMW9…</div></div><div id="ld"></div>
+<script>window.__err=[];
+function showFatal(){var d=document.getElementById('app');if(!d||window.__w9ok)return;var o=document.getElementById('ld');if(o)o.className='';
+var el=document.getElementById('appsrc'),inf='html='+document.documentElement.outerHTML.length+', scripts='+document.scripts.length+', appsrc='+(el?el.text.length:'tidak ada')+', started='+(window.__w9start?'ya':'tidak');
+d.innerHTML='<div style="padding:28px;font-family:sans-serif;max-width:600px;margin:auto"><h3 style="color:#c0392b">Aplikasi gagal dimuat</h3><p>Kirim tulisan di bawah ini ke pembuat aplikasi:</p><pre style="background:#f6f6f6;padding:10px;white-space:pre-wrap;font-size:12px">'+String(window.__err.join('\n')||'(tidak ada pesan error)').replace(/</g,'&lt;')+'\n'+inf+'</pre><button onclick="location.reload()">Muat ulang</button></div>'}
+window.addEventListener('error',function(e){window.__err.push((e.message||'error')+' ['+(e.lineno||0)+':'+(e.colno||0)+']')},true);
+document.addEventListener('securitypolicyviolation',function(e){window.__err.push('CSP: '+e.violatedDirective+' '+(e.blockedURI||''))});
+window.addEventListener('unhandledrejection',function(e){window.__err.push('promise: '+(e.reason&&e.reason.message||e.reason))});
+setTimeout(function(){if(!window.__w9ok)showFatal()},5000);</script>
+<script type="text/plain" id="appsrc">
+window.__w9start = 1;
+(function () {
+const LOGO = 'data:image/png;base64,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';
+const DURASI = 45 * 60;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ini = n => String(n || '?').trim().split(/\s+/).slice(0, 2).map(x => x[0]).join('').toUpperCase().replace(/[^\p{L}\p{N}]/gu, '') || '?';
+function avatar(a, sz) {
+  const css = `width:${sz}px;height:${sz}px;font-size:${Math.round(sz * .38)}px`, I = ini(a.nama);
+  return a.foto ? `<img class="av" style="${css}" src="${esc(a.foto)}" alt="" onerror="var s=document.createElement('span');s.className='av ph';s.style.cssText=this.style.cssText;s.textContent='${I}';this.replaceWith(s)">` : `<span class="av ph" style="${css}">${esc(I)}</span>`;
+}
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const st = { get: k => { try { return JSON.parse(localStorage.getItem(k)) } catch (e) { return null } }, set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)) } catch (e) {} }, del: k => { try { localStorage.removeItem(k) } catch (e) {} } };
+let S = { user: null, auth: null, ex: null, tab: 'presensi', D: null };
+const app = h => $('app').innerHTML = h;
+function toast(m) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = m; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
+
+/* ===== Loading ===== */
+$('ld').innerHTML = `<div class="lw"><div class="rg"><img src="${LOGO}" alt=""></div><div class="lt"><span id="ldt"></span><span class="dt"><i>.</i><i>.</i><i>.</i></span></div><div class="lb"><i></i></div><small>EXAMW9 · Ponpes Walisongo</small></div>`;
+function ld(m) { const e = $('ld'); if (!m) { e.className = ''; return; } $('ldt').textContent = m; e.className = 'on'; }
+
+/* ===== Anti-cheat & layar penuh ===== */
+const MAXV = 3; let gT = 0;
+const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
+let kioskOff = false, noFS = false; const keysDn = new Set();
+async function lockKeys() { try { if (navigator.keyboard && navigator.keyboard.lock) await navigator.keyboard.lock(['Escape']); } catch (e) {} }
+async function enterFS() { const d = document.documentElement; try { const f = d.requestFullscreen || d.webkitRequestFullscreen; if (f) { await f.call(d); kioskOff = false; lockKeys(); return true; } } catch (e) {} return false; }
+function showGate() {
+  if (noFS || !(document.fullscreenEnabled || document.webkitFullscreenEnabled)) { noFS = true; return; }
+  let g = $('fg'); if (!g) { g = document.createElement('div'); g.id = 'fg'; document.body.appendChild(g);
+    g.innerHTML = `<div class="gb"><img src="${LOGO}" alt=""><h2>Mode Layar Penuh</h2><p>Aplikasi ujian EXAMW9 berjalan dalam layar penuh. Tekan tombol di bawah untuk melanjutkan.</p><button class="btn" id="fgb" onclick="gateGo()">MASUK LAYAR PENUH</button></div>`; }
+  g.classList.add('on');
+}
+function hideGate() { const g = $('fg'); if (g) g.classList.remove('on'); }
+async function gateGo() {
+  hideGate();
+  const ok = await Promise.race([enterFS(), sleep(2500).then(() => false)]);
+  if (!ok && !fsEl()) { noFS = true; toast('Layar penuh tidak tersedia di perangkat/peramban ini'); }
+}
+function keluarFS() { kioskOff = true; try { if (navigator.keyboard && navigator.keyboard.unlock) navigator.keyboard.unlock(); } catch (e) {} hideGate(); exitFS(); }
+['fullscreenchange', 'webkitfullscreenchange'].forEach(ev => document.addEventListener(ev, () => { if (fsEl()) { hideGate(); lockKeys(); } else if (!kioskOff && !noFS && !guardOn()) showGate(); }));
+addEventListener('keydown', e => {
+  keysDn.add(String(e.key).toLowerCase());
+  if ((e.ctrlKey || e.metaKey) && keysDn.has('c') && keysDn.has('b')) { e.preventDefault(); e.stopPropagation(); keluarFS(); return; }
+  if (e.key === 'F11' || (e.key === 'Escape' && fsEl())) e.preventDefault();
+}, true);
+addEventListener('keyup', e => keysDn.delete(String(e.key).toLowerCase()), true);
+addEventListener('blur', () => keysDn.clear());
+function exitFS() { try { if (fsEl()) (document.exitFullscreen || document.webkitExitFullscreen).call(document); } catch (e) {} }
+const guardOn = () => S.ex && S.ex.active && !S.ex.done && !S.pause;
+function startGuard() { document.body.classList.add('ex'); gT = Date.now() + 1500; }
+function stopGuard() { document.body.classList.remove('ex'); const w = $('vw'); if (w) w.remove(); }
+function violation(j) {
+  if (!guardOn()) return; const n = Date.now(); if (n - gT < 1500) return; gT = n;
+  const E = S.ex; E.viol = (E.viol || 0) + 1; saveEx();
+  google.script.run.withFailureHandler(() => {}).catatPelanggaran(S.auth, E.mapel, j, E.viol);
+  const t = document.querySelector('.vc'); if (t) t.textContent = '⚠ ' + E.viol + '/' + MAXV;
+  if (E.viol >= MAXV) { warn(`${j}\nBatas pelanggaran (${MAXV}x) tercapai. Jawaban Anda dikirim otomatis.`, true); setTimeout(() => selesai(true), 1800); return; }
+  warn(`${j}\nPelanggaran ${E.viol} dari ${MAXV}. Pelanggaran ${MAXV}x akan mengirim ujian otomatis.`);
+}
+function warn(m, fin) {
+  let w = $('vw'); if (!w) { w = document.createElement('div'); w.id = 'vw'; document.body.appendChild(w); }
+  w.innerHTML = `<div class="vb"><div style="font-size:46px">⚠️</div><h2>Peringatan!</h2><p style="white-space:pre-line">${esc(m)}</p>${fin ? '' : '<button class="btn" onclick="backExam()">Kembali ke Ujian</button>'}</div>`; w.style.display = 'flex';
+}
+async function backExam() { $('vw').style.display = 'none'; gT = Date.now() + 1500; if (!S.ex.nofs) await enterFS(); }
+['fullscreenchange', 'webkitfullscreenchange'].forEach(ev => document.addEventListener(ev, () => { if (guardOn() && !S.ex.nofs && !fsEl()) violation('Keluar dari layar penuh'); }));
+document.addEventListener('visibilitychange', () => { if (document.hidden) violation('Berpindah tab / membuka aplikasi lain'); });
+addEventListener('blur', () => setTimeout(() => { if (guardOn() && !document.hasFocus()) violation('Meninggalkan jendela ujian'); }, 400));
+['contextmenu', 'copy', 'cut', 'paste', 'dragstart', 'selectstart'].forEach(ev => addEventListener(ev, e => { if (guardOn()) e.preventDefault(); }));
+addEventListener('keydown', e => { if (!guardOn()) return; const k = e.key.toLowerCase(), c = e.ctrlKey || e.metaKey;
+  if (e.key === 'F12' || (c && ['c', 'v', 'x', 'u', 's', 'p', 'a'].includes(k)) || (c && e.shiftKey && ['i', 'j', 'c'].includes(k))) { e.preventDefault(); toast('Tombol ini dinonaktifkan selama ujian'); } });
+addEventListener('keyup', e => { if (guardOn() && e.key === 'PrintScreen') { try { navigator.clipboard.writeText('Dilarang'); } catch (x) {} violation('Mencoba mengambil tangkapan layar'); } });
+
+/* ===== Indikator jaringan (sinyal + kecepatan + ping) ===== */
+const NET = { ms: null, mbps: null, busy: false, fail: 0 }, PING_BYTES = 60000;
+function barCount() {
+  if (!navigator.onLine) return 0;
+  if (NET.ms == null) { const c = navigator.connection; return c ? ({ 'slow-2g': 1, '2g': 1, '3g': 2, '4g': 4 }[c.effectiveType] || 3) : 3; }
+  return NET.ms < 600 ? 4 : NET.ms < 1200 ? 3 : NET.ms < 2500 ? 2 : 1;
+}
+function netInner() {
+  const n = barCount(), off = !navigator.onLine, cls = off ? 'off' : n <= 1 ? 'bad' : n === 2 ? 'mid' : 'ok';
+  const c = navigator.connection, mb = NET.mbps != null ? NET.mbps : (c && c.downlink != null ? c.downlink : null);
+  const sp = off ? 'Offline' : NET.busy ? 'Mengukur…' : (mb != null ? '↓ ' + (NET.mbps != null ? '≈ ' : '') + (mb >= 10 ? Math.round(mb) : mb.toFixed(1)) + ' Mbps' : '—');
+  return `<span class="bars ${cls}">${[4, 7, 10, 13].map((h, i) => `<i style="height:${h}px;opacity:${i < n ? 1 : .3}"></i>`).join('')}</span><span>${sp}</span>${!off && !NET.busy && NET.ms != null ? `<span class="tx2">· ${NET.ms} ms</span>` : ''}`;
+}
+const updateNet = () => document.querySelectorAll('.ni').forEach(e => e.innerHTML = netInner());
+async function ukurJaringan(full) {
+  if (NET.busy || !navigator.onLine) { updateNet(); return; }
+  NET.busy = !!full; updateNet();
+  try {
+    const t0 = performance.now(); await call('ping', 0); const rtt = Math.round(performance.now() - t0); NET.ms = rtt;
+    if (full) { const t1 = performance.now(); await call('ping', PING_BYTES); const d = Math.max(performance.now() - t1 - rtt, 50); NET.mbps = Math.min(+(PING_BYTES * 8 / 1e6 / (d / 1000)).toFixed(2), 999); }
+    NET.fail = 0;
+  } catch (e) { NET.fail++; }
+  NET.busy = false; updateNet();
+}
+if (navigator.connection) navigator.connection.addEventListener('change', updateNet);
+
+/* ===== Jaringan: deteksi, timeout, retry ===== */
+const slow = () => { const c = navigator.connection; return !!c && (c.saveData || /2g|3g/.test(c.effectiveType || '')); };
+let nbT;
+function netUI(flashOk) {
+  const b = $('nb'); clearTimeout(nbT);
+  if (!navigator.onLine) { b.className = 'show off'; b.textContent = '📡 Offline — jawaban tetap tersimpan di perangkat'; }
+  else if (slow()) { b.className = 'show slow'; b.textContent = '🐢 Koneksi lambat — mode hemat aktif'; }
+  else if (flashOk) { b.className = 'show ok'; b.textContent = '✅ Tersambung kembali'; nbT = setTimeout(() => b.className = '', 2500); }
+  else b.className = '';
+}
+addEventListener('online', () => { netUI(true); updateNet(); NET.fail = 0; ukurJaringan(true); flushPending(); }); addEventListener('offline', () => { netUI(); updateNet(); });
+if (navigator.connection) navigator.connection.addEventListener('change', () => netUI());
+const once = (f, a) => new Promise((ok, no) => {
+  let d = 0; const t = setTimeout(() => { if (!d) { d = 1; no(new Error('Waktu habis, koneksi lambat')) } }, 30000);
+  google.script.run.withSuccessHandler(r => { if (!d) { d = 1; clearTimeout(t); ok(r) } }).withFailureHandler(e => { if (!d) { d = 1; clearTimeout(t); no(e) } })[f](...a);
+});
+const RETRY = ['login', 'daftarMapel', 'dataAdmin', 'kirimJawaban'];
+async function call(f, ...a) {
+  const n = RETRY.includes(f) ? 4 : 1; let err;
+  for (let i = 0; i < n; i++) { try { return await once(f, a); } catch (e) { err = e; if (i < n - 1) await sleep(1200 * 2 ** i); } }
+  throw err;
+}
+
+/* ===== LOGIN ===== */
+function pgLogin() {
+  app(`<div class="lg"><span class="ni lgni" title="Ketuk untuk mengukur ulang" onclick="ukurJaringan(true)">${netInner()}</span><div class="card">
+  <img class="logo" src="${LOGO}" alt="">
+  <h1>Selamat Datang</h1><p>Masukkan username dan password yang telah diberikan</p>
+  <label>Username</label><input id="u" autocomplete="username" autocapitalize="off" placeholder="Username">
+  <label>Password</label><div class="pw"><input id="p" type="password" autocomplete="current-password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"><span onclick="togglePw()">👁</span></div>
+  <div class="err" id="e"></div>
+  <button class="btn" style="width:100%" onclick="doLogin()" id="lb">MASUK</button>
+  <p style="margin:16px 0 0;font-size:12px">EXAMW9 Online · Ponpes Walisongo Sragen</p></div></div>`);
+}
+async function doLogin() {
+  const u = $('u').value.trim(), p = $('p').value; $('e').textContent = ''; if (!u || !p) { $('e').textContent = 'Isi username dan password'; return; }
+  $('lb').disabled = true; ld('Memeriksa akun');
+  try {
+    const r = await call('login', u, p);
+    if (!r.ok) { ld(); $('e').textContent = 'Username atau password salah'; $('lb').disabled = false; return; }
+    S.user = r; S.auth = { u, p };
+    if (r.role === 'admin') return pgAdmin();
+    ld('Menyiapkan halaman peserta'); await flushPending();
+    const saved = st.get('w9ex_' + u);
+    if (saved) { S.ex = saved; S.ex.done = false; ld(); return pgResume(); }
+    pgInfo();
+  } catch (e) { ld(); $('e').textContent = 'Gagal terhubung. Periksa internet lalu coba lagi.'; $('lb').disabled = false; }
+}
+function pgResume() {
+  app(header('EXAMW9 · Ponpes Walisongo', '<button class="btn o s" onclick="logout()">Keluar</button>') + `<div class="wrap" style="padding-top:50px"><div class="card center"><div style="font-size:46px">📝</div><h2 style="color:var(--g);margin:6px 0">Ujian Belum Selesai</h2><p>Anda masih memiliki ujian <b>${esc(S.ex.mapel)}</b> yang sedang berjalan.<br>Layar penuh akan diaktifkan saat Anda melanjutkan.</p><button class="btn" onclick="lanjut()">LANJUTKAN UJIAN →</button></div></div>`);
+}
+async function lanjut() {
+  const ok = await enterFS(); S.ex.nofs = !ok; S.ex.active = true; S.ex.t = setInterval(tick, 1000); startGuard(); pgSoal();
+  google.script.run.withFailureHandler(() => {}).catatPelanggaran(S.auth, S.ex.mapel, 'Membuka kembali / memuat ulang halaman ujian', S.ex.viol || 0);
+}
+function logout() { if (S.ex) clearInterval(S.ex.t); S = { user: null, auth: null, ex: null, tab: 'presensi', D: null }; pgLogin(); }
+const header = (mid, right) => `<div class="top"><div class="br"><img src="${LOGO}" alt=""><span>${mid}</span></div><div class="nr"><span class="ni" title="Ketuk untuk mengukur ulang" onclick="ukurJaringan(true)">${netInner()}</span>${right}</div></div>`;
+
+/* ===== PESERTA: halaman 2 ===== */
+async function pgInfo() {
+  ld('Menyiapkan data ujian');
+  let m = []; try { m = await call('daftarMapel', S.auth); } catch (e) { toast('Gagal memuat daftar mapel'); }
+  const u = S.user, jam = new Date().getHours(), sapa = jam < 11 ? 'Selamat pagi' : jam < 15 ? 'Selamat siang' : jam < 18 ? 'Selamat sore' : 'Selamat malam';
+  app(header('EXAMW9 · Ponpes Walisongo', '<button class="btn o s" onclick="logout()">Keluar</button>') + `
+  <div class="wrap" style="max-width:1000px"><div class="hi"><h2>${sapa}, ${esc(u.nama.split(' ')[0])} 👋</h2><p>Periksa data Anda, pilih mata pelajaran, lalu masukkan token dari pengawas.</p></div>
+  <div class="hero">
+   <div class="card prof">${avatar(u, 120)}<h3>${esc(u.nama)}</h3><span class="chip">Kelas ${esc(u.kelas)}</span>
+    <div class="ro"><div><small>Nama Lengkap</small><b>${esc(u.nama)}</b></div><div><small>Kelas</small><b>${esc(u.kelas)}</b></div><div><small>Username</small><b>${esc(u.username)}</b></div></div>
+    <div class="lock">🔒 Data ini sesuai pendaftaran dari admin dan tidak dapat diubah. Jika ada yang salah, hubungi admin.</div></div>
+   <div>
+    <div class="card" style="margin-bottom:18px"><h3 style="margin-top:0">📝 Mulai Ujian</h3>
+     <div class="grid"><div><label>Mata Pelajaran</label><select id="mp">${m.length ? m.map(x => `<option>${esc(x)}</option>`).join('') : '<option value="">(Tidak ada ujian tersedia)</option>'}</select></div>
+     <div><label>Token Ujian</label><input id="tk" placeholder="Masukkan token" style="text-transform:uppercase" autocapitalize="characters" onkeydown="if(event.key==='Enter')mulai()"></div></div>
+     <div class="err" id="e"></div><button class="btn" style="width:100%" id="mb" onclick="mulai()" ${m.length ? '' : 'disabled'}>MULAI UJIAN →</button></div>
+    <div class="card"><h3 style="margin-top:0">📜 Peraturan Ujian</h3>
+     <div class="rl"><i>⏱</i><div>Waktu ujian <b>45 menit</b>. Setelah habis, jawaban terkirim otomatis.</div></div>
+     <div class="rl"><i>📄</i><div>Satu halaman satu soal. Pilih satu jawaban yang paling benar.</div></div>
+     <div class="rl"><i>🖥</i><div>Ujian berjalan dalam <b>layar penuh</b>. Keluar layar penuh atau pindah tab dicatat sebagai pelanggaran; <b>3 kali</b> = ujian dikirim otomatis.</div></div>
+     <div class="rl"><i>🚫</i><div>Dilarang bekerja sama, membuka buku, atau membuka aplikasi lain.</div></div>
+     <div class="rl"><i>📡</i><div>Jika internet terputus, tetap kerjakan. Jawaban tersimpan dan dikirim otomatis saat tersambung.</div></div>
+     <div class="rl"><i>🔒</i><div>Nilai tidak ditampilkan setelah ujian selesai.</div></div></div>
+   </div></div></div>`); ld();
+}
+
+async function mulai() {
+  const mapel = $('mp').value, tk = $('tk').value; if (!tk) { $('e').textContent = 'Token wajib diisi'; return; }
+  $('mb').disabled = true; const fs = enterFS(); ld('Menyiapkan soal ujian');
+  try {
+    const r = await call('mulaiUjian', S.auth, mapel, tk);
+    if (!r.ok) { ld(); $('e').textContent = r.pesan; $('mb').disabled = false; return; }
+    S.ex = { mapel, soal: r.soal, i: 0, ans: {}, end: Date.now() + DURASI * 1000, done: false, viol: 0, active: true, nofs: !(await fs) };
+    saveEx(); startGuard(); pgSoal(); ld(); S.ex.t = setInterval(tick, 1000); tick();
+    if (S.ex.nofs) toast('Layar penuh tidak didukung perangkat ini — pengawasan tab tetap aktif');
+  } catch (e) { ld(); $('e').textContent = 'Koneksi bermasalah, coba lagi.'; $('mb').disabled = false; }
+}
+const saveEx = () => { const { t, ...d } = S.ex; st.set('w9ex_' + S.auth.u, d); };
+
+/* ===== PESERTA: halaman 3 (1 soal / halaman) ===== */
+function pgSoal() {
+  const E = S.ex, q = E.soal[E.i], n = E.soal.length, dj = Object.keys(E.ans).length;
+  app(header(esc(E.mapel), `<span style="display:flex;gap:8px;align-items:center"><span class="vc">⚠ ${E.viol || 0}/${MAXV}</span><span class="timer" id="tm">45:00</span></span>`) + `<div class="pg"><i style="width:${dj / n * 100}%"></i></div>
+  <div class="wrap"><div class="card paper"><div class="wm" style="background-image:url('${LOGO}')"></div>
+  <span class="chip">Soal ${E.i + 1} / ${n}</span> <span style="display:inline-flex;align-items:center;gap:8px;color:var(--mu);font-size:13px">${avatar(S.user, 28)} ${esc(S.user.nama)} · ${esc(S.user.kelas)}</span>
+  ${q.bacaan ? `<h4 style="margin:14px 0 0">📖 ${esc(q.bacaan.judul)}</h4><div class="bac">${esc(q.bacaan.teks)}${q.bacaan.gambar ? `<img class="img" loading="lazy" decoding="async" src="${esc(q.bacaan.gambar)}">` : ''}</div>` : ''}
+  <p style="font-size:18px;white-space:pre-wrap;margin:16px 0 4px">${esc(q.soal)}</p>${q.gambar ? `<img class="img" loading="lazy" decoding="async" src="${esc(q.gambar)}">` : ''}
+  ${['A', 'B', 'C', 'D'].filter(k => q.opsi[k]).map(k => `<div class="op ${E.ans[q.id] === k ? 's' : ''}" onclick="pilih('${k}')"><b>${k}</b><span>${esc(q.opsi[k])}</span></div>`).join('')}
+  </div>
+  <div class="nav">${E.soal.map((s, j) => `<button class="${E.ans[s.id] ? 'd' : ''} ${j === E.i ? 'c' : ''}" onclick="go(${j})">${j + 1}</button>`).join('')}</div>
+  <div class="bot"><button class="btn o" onclick="go(${E.i - 1})" ${E.i === 0 ? 'disabled' : ''}>← Sebelumnya</button>
+  ${E.i < n - 1 ? `<button class="btn" onclick="go(${E.i + 1})">Selanjutnya →</button>` : `<button class="btn r" onclick="selesai(false)">Selesai & Kirim ✔</button>`}</div></div>`);
+  scrollTo(0, 0); tick();
+}
+function go(j) { S.ex.i = j; saveEx(); pgSoal(); }
+function pilih(k) { const E = S.ex; E.ans[E.soal[E.i].id] = k; saveEx(); pgSoal(); }
+function tick() {
+  const E = S.ex; if (!E || E.done) return;
+  const s = Math.max(0, Math.round((E.end - Date.now()) / 1000)), t = $('tm');
+  if (t) { t.textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); t.classList.toggle('low', s < 300); }
+  if (s <= 0) selesai(true);
+}
+async function selesai(auto) {
+  const E = S.ex; if (E.done) return;
+  if (!auto) { const k = E.soal.length - Object.keys(E.ans).length; S.pause = 1; const okc = confirm(k ? `Masih ada ${k} soal belum dijawab. Kirim sekarang?` : 'Kirim jawaban sekarang?'); S.pause = 0; gT = Date.now() + 1500; if (!okc) return; }
+  E.done = true; clearInterval(E.t); stopGuard();
+  st.set('w9pend_' + S.auth.u, { mapel: E.mapel, ans: E.ans }); st.del('w9ex_' + S.auth.u);
+  pgEnd(false); flushPending();
+}
+let flushing = false;
+async function flushPending() {
+  if (!S.auth || flushing) return; const p = st.get('w9pend_' + S.auth.u); if (!p) return;
+  flushing = true;
+  try { await call('kirimJawaban', S.auth, p.mapel, p.ans); st.del('w9pend_' + S.auth.u); const e = $('sync'); if (e) { e.innerHTML = '✅ Jawaban Anda telah tersimpan di server.'; } }
+  catch (e) { const x = $('sync'); if (x) x.innerHTML = '⏳ Menunggu koneksi… jangan tutup halaman, jawaban akan terkirim otomatis.'; setTimeout(flushPending, 8000); }
+  flushing = false;
+}
+
+/* ===== PENUTUP ===== */
+function pgEnd() {
+  app(`<div class="wrap" style="padding-top:60px"><div class="card center"><img src="${LOGO}" width="96" alt="">
+  <h2 style="color:var(--g)">Ujian Selesai</h2><p>Terima kasih atas kerja keras Anda.<br>Semoga hasilnya membawa keberkahan.</p>
+  <p id="sync" class="chip">⏳ Mengirim jawaban…</p><br><br><button class="btn" onclick="logout()">Keluar</button></div></div>`);
+}
+
+/* ===== ADMIN ===== */
+async function pgAdmin() {
+  ld('Memuat data admin');
+  try { S.D = await call('dataAdmin', S.auth); drawAdmin(); ld(); } catch (e) { ld(); toast('Gagal memuat data'); logout(); }
+}
+const TABS = [['presensi', '📋 Presensi'], ['akun', '👥 Akun & Token'], ['bacaan', '📖 Bacaan'], ['soal', '✏️ Soal'], ['nilai', '🏆 Nilai'], ['sertifikat', '🎓 Sertifikat']];
+function drawAdmin() {
+  app(header('Admin · EXAMW9', '<span><button class="btn o s" style="background:#fff3" onclick="pgAdminKeep()">↻</button> <button class="btn o s" onclick="logout()">Keluar</button></span>') + `<div class="wrap">
+  <div class="tabs">${TABS.map(t => `<button class="${S.tab === t[0] ? 'a' : ''}" onclick="setTab('${t[0]}')">${t[1]}</button>`).join('')}</div>
+  <div class="card" id="pane">${paneHTML()}</div></div>`);
+}
+const tbl = (h, rows) => `<div class="sc"><table><tr>${h.map(x => `<th>${x}</th>`).join('')}</tr>${rows.join('') || `<tr><td colspan="${h.length}" class="center" style="color:var(--mu)">Belum ada data</td></tr>`}</table></div>`;
+const delBtn = (s, k, v) => `<button class="btn r s" onclick="hps('${s}','${k}','${esc(v)}')">Hapus</button>`;
+function paneHTML() {
+  const D = S.D, t = S.tab, ps = D.akun.filter(a => a.role !== 'admin').length, avg = D.nilai.length ? Math.round(D.nilai.reduce((a, b) => a + Number(b.nilai), 0) / D.nilai.length) : 0;
+  if (t === 'presensi') return `<div class="st"><div><b>${ps}</b><small>Peserta</small></div><div><b>${D.soal.length}</b><small>Soal</small></div><div><b>${D.nilai.length}</b><small>Selesai ujian</small></div><div><b>${avg}</b><small>Rata-rata nilai</small></div></div>
+    <h3 style="margin-top:0">Presensi Peserta (${D.presensi.length})</h3>` + tbl(['Waktu', 'Nama', 'Kelas', 'Mapel'], D.presensi.map(r => `<tr><td>${esc(r.waktu)}</td><td>${esc(r.nama)}</td><td>${esc(r.kelas)}</td><td>${esc(r.mapel)}</td></tr>`)) + `<h3>⚠️ Catatan Pelanggaran (${(D.pelanggaran || []).length})</h3>` + tbl(['Waktu', 'Nama', 'Kelas', 'Mapel', 'Pelanggaran', 'Ke-'], (D.pelanggaran || []).map(r => `<tr><td>${esc(r.waktu)}</td><td>${esc(r.nama)}</td><td>${esc(r.kelas)}</td><td>${esc(r.mapel)}</td><td>${esc(r.jenis)}</td><td>${esc(r.jumlah)}</td></tr>`));
+  if (t === 'akun') return `<h3 style="margin-top:0">Pembuatan Akun</h3><div class="grid">
+    <div><label>Nama</label><input id="an"></div><div><label>Kelas</label><input id="ak"></div>
+    <div><label>Username</label><input id="au" autocapitalize="off"></div><div><label>Password</label><input id="ap"></div></div>
+    <label>Foto Peserta (opsional)</label><input id="af" type="file" accept="image/*">
+    <button class="btn" onclick="addAkun()">+ Tambah Akun</button> <button class="btn o" onclick="cetakKartu()">🖨 Cetak Semua Kartu Ujian</button><br><br>
+    <input type="file" id="fpick" accept="image/*" hidden onchange="ubahFoto(this)">
+    <input class="srch" id="qa" placeholder="🔍 Cari nama / kelas / username" oninput="filterAkun()">` +
+    tbl(['Peserta', 'Username', 'Password', 'Kelas', 'Role', ''], D.akun.map(r => `<tr class="ar" data-q="${esc((r.nama + ' ' + r.kelas + ' ' + r.username).toLowerCase())}"><td><div class="tdp">${avatar(r, 40)}<b>${esc(r.nama)}</b></div></td><td>${esc(r.username)}</td><td>${esc(r.password)}</td><td>${esc(r.kelas)}</td><td>${esc(r.role)}</td><td style="white-space:nowrap">${r.username === 'admin' ? '' : `<button class="btn o s" onclick="pilihFoto('${esc(r.username)}')">📷 Foto</button> <button class="btn o s" onclick="cetakKartu('${esc(r.username)}')">🖨 Kartu</button> ` + delBtn('Akun', 'username', r.username)}</td></tr>`)) +
+    `<h3>Pembuatan Token</h3><div class="grid"><div><label>Mata Pelajaran</label><input id="tm1"></div><div><label>Token</label><input id="tt1" placeholder="mis. W9ABC1"></div></div>
+    <button class="btn" onclick="addToken()">+ Tambah Token</button><br><br>` +
+    tbl(['Mapel', 'Token', ''], D.token.map(r => `<tr><td>${esc(r.mapel)}</td><td><b>${esc(r.token)}</b></td><td>${delBtn('Token', 'token', r.token)}</td></tr>`));
+  if (t === 'bacaan') return `<h3 style="margin-top:0">Buat Bacaan</h3><label>Judul</label><input id="bj"><label>Teks Bacaan</label><textarea id="bt" rows="6"></textarea>
+    <label>Gambar (opsional)</label><input id="bg" type="file" accept="image/*"><button class="btn" onclick="addBacaan()" id="bb">Simpan Bacaan</button><br><br>` +
+    tbl(['Judul', 'Cuplikan', ''], D.bacaan.map(r => `<tr><td>${esc(r.judul)}</td><td>${esc(r.teks.slice(0, 80))}…${r.gambar ? ' 🖼' : ''}</td><td>${delBtn('Bacaan', 'id', r.id)}</td></tr>`));
+  if (t === 'soal') return `<h3 style="margin-top:0">Buat Soal</h3><div class="grid">
+    <div><label>Mata Pelajaran</label><input id="sm" list="ml"><datalist id="ml">${[...new Set(D.token.map(x => x.mapel))].map(x => `<option value="${esc(x)}">`).join('')}</datalist></div>
+    <div><label>Bacaan (opsional)</label><select id="sb"><option value="">— tanpa bacaan —</option>${D.bacaan.map(b => `<option value="${esc(b.id)}">${esc(b.judul)}</option>`).join('')}</select></div></div>
+    <label>Pertanyaan</label><textarea id="sq" rows="3"></textarea><label>Gambar soal (opsional)</label><input id="sg" type="file" accept="image/*">
+    <div class="grid">${['A', 'B', 'C', 'D'].map(k => `<div><label>Opsi ${k}</label><input id="o${k}"></div>`).join('')}</div>
+    <label>Kunci Jawaban</label><select id="sk"><option>A</option><option>B</option><option>C</option><option>D</option></select>
+    <button class="btn" onclick="addSoal()" id="sbn">Simpan Soal</button><br><br>` +
+    tbl(['Mapel', 'Soal', 'Kunci', ''], D.soal.map(r => `<tr><td>${esc(r.mapel)}</td><td>${esc(r.soal.slice(0, 70))}${r.bacaanId ? ' 📖' : ''}${r.gambar ? ' 🖼' : ''}</td><td>${esc(r.kunci)}</td><td>${delBtn('Soal', 'id', r.id)}</td></tr>`));
+  if (t === 'nilai') return `<h3 style="margin-top:0">Nilai (tertinggi → terendah)</h3>` + tbl(['#', 'Nama', 'Kelas', 'Mapel', 'Benar', 'Nilai', ''], D.nilai.map((r, i) => `<tr><td>${['🥇', '🥈', '🥉'][i] || i + 1}</td><td>${esc(r.nama)}</td><td>${esc(r.kelas)}</td><td>${esc(r.mapel)}</td><td>${r.benar}/${r.total}</td><td><span class="nl ${Number(r.nilai) < 70 ? 'k' : ''}">${r.nilai}</span></td><td>${delBtn('Nilai', 'waktu', r.waktu)}</td></tr>`));
+  if (t === 'sertifikat') return `<h3 style="margin-top:0">Sertifikat</h3><label>Pilih peserta</label>
+    <select id="cs" onchange="showCert()"><option value="">— pilih —</option>${D.akun.filter(a => a.role !== 'admin').map(a => `<option value="${esc(a.username)}">${esc(a.nama)} (${esc(a.kelas)})</option>`).join('')}</select><div id="cw"></div>`;
+}
+async function hps(s, k, v) { if (!confirm('Hapus data ini?')) return; try { await call('adminHapus', S.auth, s, k, v); pgAdminKeep(); } catch (e) { toast(e.message || 'Gagal'); } }
+async function pgAdminKeep() { ld('Memuat ulang data'); try { S.D = await call('dataAdmin', S.auth); drawAdmin(); } catch (e) { toast('Gagal memuat ulang'); } ld(); }
+async function tambahData(s, o) { ld('Menyimpan data'); try { await call('adminTambah', S.auth, s, o); toast('Tersimpan ✔'); await pgAdminKeep(); } catch (e) { ld(); toast(e.message || 'Gagal menyimpan'); drawAdmin(); } }
+const v = id => $(id).value.trim();
+async function addAkun() {
+  if (!v('au') || !v('ap') || !v('an')) return toast('Lengkapi data');
+  ld('Menyimpan akun'); let foto = '';
+  try { foto = await kecil($('af').files[0], 420); } catch (e) { ld(); return toast('Gagal mengunggah foto'); }
+  tambahData('Akun', { username: v('au'), password: v('ap'), nama: v('an'), kelas: v('ak'), role: 'peserta', foto });
+}
+function pilihFoto(u) { S.fu = u; $('fpick').value = ''; $('fpick').click(); }
+async function ubahFoto(inp) {
+  const f = inp.files[0]; if (!f) return; ld('Mengunggah foto');
+  try { const url = await kecil(f, 420); await call('adminUbah', S.auth, 'Akun', 'username', S.fu, { foto: url }); toast('Foto diperbarui ✔'); await pgAdminKeep(); }
+  catch (e) { ld(); toast('Gagal mengunggah foto'); }
+}
+function filterAkun() { const q = $('qa').value.toLowerCase(); document.querySelectorAll('tr.ar').forEach(r => r.style.display = r.dataset.q.includes(q) ? '' : 'none'); }
+function addToken() { if (!v('tm1') || !v('tt1')) return toast('Lengkapi data'); tambahData('Token', { mapel: v('tm1'), token: v('tt1').toUpperCase(), aktif: 'YA' }); }
+function kecil(file, mxo) {
+  return new Promise((ok, no) => {
+    if (!file) return ok('');
+    const fr = new FileReader(), mx = mxo || (slow() ? 600 : 900);
+    fr.onload = () => { const im = new Image(); im.onload = async () => {
+      const r = Math.min(1, mx / Math.max(im.width, im.height)), c = document.createElement('canvas');
+      c.width = im.width * r; c.height = im.height * r; c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      try { ok(await call('adminUpload', S.auth, c.toDataURL('image/jpeg', slow() ? .7 : .8), 'img_' + Date.now() + '.jpg')); } catch (e) { no(e); }
+    }; im.src = fr.result; };
+    fr.readAsDataURL(file);
+  });
+}
+async function addBacaan() {
+  if (!v('bj') || !v('bt')) return toast('Judul dan teks wajib');
+  $('bb').disabled = true; $('bb').textContent = 'Menyimpan...';
+  try { const g = await kecil($('bg').files[0]); await tambahData('Bacaan', { id: 'B' + Date.now(), judul: v('bj'), teks: $('bt').value, gambar: g }); } catch (e) { toast('Gagal upload gambar'); drawAdmin(); }
+}
+async function addSoal() {
+  if (!v('sm') || !v('sq') || !v('oA') || !v('oB')) return toast('Mapel, soal, opsi A & B wajib');
+  $('sbn').disabled = true; $('sbn').textContent = 'Menyimpan...';
+  try { const g = await kecil($('sg').files[0]);
+    await tambahData('Soal', { id: 'S' + Date.now(), mapel: v('sm'), bacaanId: $('sb').value, soal: $('sq').value, gambar: g, A: v('oA'), B: v('oB'), C: v('oC'), D: v('oD'), kunci: $('sk').value });
+  } catch (e) { toast('Gagal upload gambar'); drawAdmin(); }
+}
+const kartuHTML = a => `<div class="kt"><div style="position:absolute;inset:0;background:url('${LOGO}') center/55% no-repeat;opacity:.06"></div><div class="h"><img src="${LOGO}" alt=""><div><b>YAYASAN PONDOK PESANTREN WALISONGO</b><small style="margin:0">Sragen · EXAMW9 Ujian Online</small></div></div><h4>KARTU PESERTA UJIAN</h4><div class="kb"><table><tr><td>Nama</td><td><b>${esc(a.nama)}</b></td></tr><tr><td>Kelas</td><td>${esc(a.kelas)}</td></tr><tr><td>Username</td><td><span class="pwd">${esc(a.username)}</span></td></tr><tr><td>Password</td><td><span class="pwd">${esc(a.password)}</span></td></tr></table><div class="kf">${a.foto ? `<img src="${esc(a.foto)}" alt="">` : 'FOTO<br>3x4'}</div></div><small>Bawa kartu ini saat ujian. Jaga kerahasiaan password dan jangan berbagi akun.</small></div>`;
+function cetakKartu(u) { const L = S.D.akun.filter(a => a.role !== 'admin' && (!u || a.username === u)); if (!L.length) return toast('Belum ada akun peserta'); printHTML(`<div class="kg">${L.map(kartuHTML).join('')}</div>`, 'portrait'); }
+function printHTML(h, o) { let p = $('pr'); if (!p) { p = document.createElement('div'); p.id = 'pr'; document.body.appendChild(p); } p.innerHTML = h; $('pgst').textContent = `@page{size:A4 ${o};margin:10mm}`; const im = [...p.querySelectorAll('img')]; Promise.race([Promise.all(im.map(i => i.complete ? 1 : new Promise(r => { i.onload = i.onerror = r; }))), sleep(4000)]).then(() => window.print()); }
+function togglePw() { const i = $('p'); i.type = i.type === 'password' ? 'text' : 'password'; }
+function setTab(t) { S.tab = t; drawAdmin(); }
+function printCert() { printHTML($('cert').outerHTML, 'landscape'); }
+function showCert() {
+  const u = $('cs').value; if (!u) { $('cw').innerHTML = ''; return; }
+  const a = S.D.akun.find(x => x.username === u), n = S.D.nilai.filter(x => x.username === u);
+  const tgl = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+  $('cw').innerHTML = `<div class="cert" id="cert"><div style="position:absolute;inset:0;background:url('${LOGO}') center/42% no-repeat;opacity:.07"></div>
+  <div class="kop"><img src="${LOGO}" alt=""><div><h2>YAYASAN PONDOK PESANTREN WALISONGO</h2><small>PONPES WALISONGO · SRAGEN<br>Ujian Online EXAMW9</small></div></div>
+  <div style="position:relative"><h1>SERTIFIKAT</h1><div>Diberikan kepada:</div><div class="nm">${esc(a.nama)}</div>
+  <div>Kelas: <b>${esc(a.kelas)}</b></div><p>atas keikutsertaan dan hasil ujian dengan nilai:</p>
+  ${n.length ? `<table><tr><th>Mata Pelajaran</th><th>Nilai</th></tr>${n.map(x => `<tr><td>${esc(x.mapel)}</td><td><b>${x.nilai}</b></td></tr>`).join('')}</table>` : '<p><i>Belum ada nilai</i></p>'}
+  <p style="margin-top:30px">Sragen, ${tgl}</p><br><br><b>Panitia Ujian</b></div></div>
+  <br><button class="btn" onclick="printCert()">🖨 Cetak / Simpan PDF</button>`;
+}
+
+window.addAkun = addAkun;
+window.addBacaan = addBacaan;
+window.addSoal = addSoal;
+window.addToken = addToken;
+window.backExam = backExam;
+window.cetakKartu = cetakKartu;
+window.doLogin = doLogin;
+window.go = go;
+window.hps = hps;
+window.lanjut = lanjut;
+window.logout = logout;
+window.mulai = mulai;
+window.pgAdminKeep = pgAdminKeep;
+window.pilih = pilih;
+window.printCert = printCert;
+window.selesai = selesai;
+window.setTab = setTab;
+window.showCert = showCert;
+window.togglePw = togglePw;
+window.ukurJaringan = ukurJaringan;
+window.gateGo = gateGo;
+window.pilihFoto = pilihFoto;
+window.ubahFoto = ubahFoto;
+window.filterAkun = filterAkun;
+ld('Memuat EXAMW9'); pgLogin(); netUI(); showGate();
+setTimeout(() => ukurJaringan(true), 600); setInterval(() => { if (!document.hidden && NET.fail < 3) ukurJaringan(false); }, 90000 + Math.floor(Math.random() * 15000)); setTimeout(() => ld(), 1100);
+window.__w9ok = true;
+
+})();
+</script>
+<script>(function(){var el=document.getElementById('appsrc');if(!el){__err.push('appsrc hilang');return}var src=el.text;
+try{new Function(src)}catch(x){__err.push('Sintaks: '+x.message);if(!/eval|Content Security|Trusted/i.test(String(x)))return}
+try{var sc=document.createElement('script');sc.text=src;document.head.appendChild(sc)}catch(x){__err.push('Pemuat: '+x.message)}
+if(!window.__w9start){try{(new Function(src))()}catch(x){__err.push('Cadangan: '+x.message)}}})();</script><script>if('serviceWorker' in navigator){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
+</body></html>
